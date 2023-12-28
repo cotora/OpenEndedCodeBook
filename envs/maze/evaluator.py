@@ -1,4 +1,4 @@
-
+import numpy as np
 
 class MazeControllerEvaluator:
     def __init__(self, maze, timesteps):
@@ -39,10 +39,16 @@ class MazeControllerEvaluatorNS:
         self.maze.reset()
 
         done = False
+        prev_loc=np.array([0,0])
+        move_vectors=[]
         for i in range(self.timesteps):
             obs = self.maze.get_observation()
             action = controller.activate(obs)
             done = self.maze.update(action)
+            if i%40==0:
+                cur_loc = self.maze.get_agent_location()
+                move_vectors.append(np.array([cur_loc[0]-prev_loc[0],cur_loc[1]-prev_loc[1]]))
+                prev_loc=cur_loc
             if done:
                 break
 
@@ -55,6 +61,7 @@ class MazeControllerEvaluatorNS:
         last_loc = self.maze.get_agent_location()
         results = {
             'score': score,
-            'data': last_loc
+            'data': last_loc,
+            'points': move_vectors
         }
         return results

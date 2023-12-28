@@ -96,9 +96,9 @@ class Population(Population):
                 genome.fitness = -1
                 continue
 
-            distances_archive = self.map_distance(key, genome, self.archive)
-            distances_new_archive = self.map_distance(key, genome, new_archive)
-            distances_current = self.map_distance(key, genome, self.population)
+            distances_archive = self.map_vector_distance(key, genome, self.archive)
+            distances_new_archive = self.map_vector_distance(key, genome, new_archive)
+            distances_current = self.map_vector_distance(key, genome, self.population)
 
             distances_archive.update(distances_new_archive)
             novelty_archive = self.knn(list(distances_archive.values()))
@@ -123,6 +123,21 @@ class Population(Population):
 
             d = self.metric_func(genome1.data, genome2.data)
             distances[key2] = d
+
+        return distances
+    
+    def map_vector_distance(self,key1,genome1,genomes):
+        distances = {}
+        for key2,genome2 in genomes.items():
+            if key1==key2:
+                continue
+
+            d_mean=0    
+            for i in range(len(genome2.points)):
+                d_mean+=self.metric_func(genome1.points[i],genome2.points[i])
+            d_mean/=len(genome2.points)
+
+            distances[key2]=d_mean
 
         return distances
 
